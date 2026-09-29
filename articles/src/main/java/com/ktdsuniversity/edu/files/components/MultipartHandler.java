@@ -1,4 +1,4 @@
-package com.ktdsuniversity.edu.files.utils;
+package com.ktdsuniversity.edu.files.components;
 
 import java.io.File;
 import java.io.IOException;
