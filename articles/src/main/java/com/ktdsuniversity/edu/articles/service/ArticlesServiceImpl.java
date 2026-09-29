@@ -26,10 +26,6 @@ public class ArticlesServiceImpl implements ArticlesService {
 	private ArticlesDao articlesDao;
 	private FilesDao filesDao;
 	
-//	public ArticlesServiceImpl(ArticlesDao articlesDao) {
-//		this.articlesDao = articlesDao;
-//	}
-
 	@Override
 	public ArticleListVO readAllArticles() {
 		long count = this.articlesDao.selectArticlesCount();
@@ -107,6 +103,52 @@ public class ArticlesServiceImpl implements ArticlesService {
 	@Override
 	public ArticlesVO updateArticle(String articleId, ModifyArticleVO modifyArticleVO) {
 		
+		if (modifyArticleVO.getFile() != null) {
+			ArticlesVO article = this.articlesDao.selectArticleByArticleId(articleId);
+			modifyArticleVO.setFileSetId(article.getFileSetId());
+			
+			String fileSetId = article.getFileSetId();
+			// 첨부파일이 없는 게시글
+			if (fileSetId == null) {
+				// FILE_SET_ID 생성
+				RequestFileSetVO fileSetVO = new RequestFileSetVO();
+				fileSetVO.setEmail(modifyArticleVO.getEmail());
+				
+				int fileSetInsertCount = this.filesDao.insertNewFileSet(fileSetVO);
+				if (fileSetInsertCount == 0) {
+					throw new IllegalArgumentException("파일세트 생성을 할 수 없습니다.");
+				}
+				
+				modifyArticleVO.setFileSetId(fileSetVO.getId());
+			}
+			
+			for (MultipartFile f: modifyArticleVO.getFile()) {
+				String homeDirectory = System.getProperty("user.home");
+
+				File uploadFolder = new File(homeDirectory, "uploadFiles");
+				if (!uploadFolder.exists()) {
+					uploadFolder.mkdirs();
+				}
+				
+				File storeFile = new File(uploadFolder, UUID.randomUUID().toString() );
+
+				try {
+					f.transferTo(storeFile);
+					
+					// FILES 데이터 생성.
+					RequestFileVO fileVO = new RequestFileVO();
+					fileVO.setFileSetId(modifyArticleVO.getFileSetId());
+					fileVO.setDisplayFileName(f.getOriginalFilename());
+					fileVO.setObfuscateFileName( storeFile.getName() );
+					fileVO.setFileSize( storeFile.length() );
+					
+					this.filesDao.insertNewFile(fileVO);
+				} catch (IllegalStateException | IOException e) {
+					throw new IllegalArgumentException(e.getMessage());
+				}
+			}
+		}
+		
 		int updatedRows = this.articlesDao.updateArticle(articleId, modifyArticleVO);
 		
 		if (updatedRows == 0) {
@@ -122,6 +164,9 @@ public class ArticlesServiceImpl implements ArticlesService {
 		if (deletedRows == 0) {
 			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
 		}
+		
+		int deleteCount = this.filesDao.deleteFilesByArticleId(articleId);
+		System.out.println(deleteCount + "개의 파일이 삭제되었습니다.");
 		return articleId;
 	}
 	

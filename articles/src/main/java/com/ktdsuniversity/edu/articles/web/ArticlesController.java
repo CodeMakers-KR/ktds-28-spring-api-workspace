@@ -1,15 +1,11 @@
 package com.ktdsuniversity.edu.articles.web;
 
-import java.io.File;
-import java.io.IOException;
-
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.ktdsuniversity.edu.articles.service.ArticlesService;
@@ -79,7 +75,7 @@ public class ArticlesController {
 	@PutMapping("/articles/{articleId}")
 	@ResponseBody
 	public ApiResponse<ArticlesVO> updateArticle(@PathVariable String articleId,
-			@RequestBody ModifyArticleVO modifyArticleVO) {
+			ModifyArticleVO modifyArticleVO) {
 		try {
 			ArticlesVO result = this.articlesService.updateArticle(articleId, modifyArticleVO);
 			return ApiResponse.OK(result);
