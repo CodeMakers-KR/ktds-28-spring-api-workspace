@@ -63,7 +63,7 @@ namespace?
 		, #{content}
 		, #{email}
 		, SYSDATE
-		, NULL)
+		, #{fileSetId})
     </insert>
     
     <select id="selectArticleByArticleId"

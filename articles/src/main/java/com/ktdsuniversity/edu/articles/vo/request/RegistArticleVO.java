@@ -18,5 +18,18 @@ public class RegistArticleVO {
 	private String content;
 	private String email;
 	private List<MultipartFile> file;
+	private String fileSetId;
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+

@@ -68,30 +68,6 @@ public class ArticlesController {
 	// , @RequestParam List<MultipartFile> file
 	) {
 
-		if (registArticleVO.getFile() != null) {
-			registArticleVO.getFile().forEach(f -> {
-				// 사용자가 업로드한 파일을 서버 컴퓨터에 저장한다.
-				// 1. 저장할 위치 선정.
-				// 사용자 홈 디렉토리 찾기.
-				String homeDirectory = System.getProperty("user.home");
-
-				File uploadFolder = new File(homeDirectory, "uploadFiles");
-				if (!uploadFolder.exists()) {
-					uploadFolder.mkdirs();
-				}
-
-				// 파일이 저장될 위치와 이름 지정하기
-				File storeFile = new File(uploadFolder, f.getOriginalFilename());
-
-				// 2. 파일 저장.
-				try {
-					f.transferTo(storeFile);
-				} catch (IllegalStateException | IOException e) {
-					e.printStackTrace();
-				}
-			});
-		}
-
 		try {
 			ArticlesVO result = this.articlesService.createNewArticle(registArticleVO);
 			return ApiResponse.CREATED(result);
