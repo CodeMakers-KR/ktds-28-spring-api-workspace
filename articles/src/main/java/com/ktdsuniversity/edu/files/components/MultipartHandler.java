@@ -147,7 +147,11 @@ public class MultipartHandler {
 	 * @param file
 	 * @return
 	 */
-	public InputStreamResource getInputStreamResource(File file) {
+	public InputStreamResource getInputStreamResource(String filename) {
+		
+		File uploadPath = this.getUploadPath();
+		File file = new File(uploadPath, filename);
+		
 		try {
 			return new InputStreamResource(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
