@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -74,11 +75,14 @@ public class MultipartHandler {
 		File storeFile = null;
 		RequestFileVO fileVO = null;
 
+		List<File> storedFileList = new ArrayList<>();
+		
 		for (MultipartFile multipartFile : file) {
 			storeFile = new File(uploadPath, UUID.randomUUID().toString());
 			try {
 				multipartFile.transferTo(storeFile);
-
+				storedFileList.add(storeFile);
+				
 				fileVO = new RequestFileVO();
 				fileVO.setFileSetId(fileSetId);
 				fileVO.setDisplayFileName(multipartFile.getOriginalFilename());
@@ -87,6 +91,9 @@ public class MultipartHandler {
 
 				this.filesDao.insertNewFile(fileVO);
 			} catch (IllegalStateException | IOException e) {
+				// 업로드 중 예외 발생하면 업로드된 파일 제거
+				storedFileList.forEach(f -> f.delete());
+				
 				throw new IllegalArgumentException(e.getMessage(), e);
 			}
 		}
