@@ -90,16 +90,12 @@ public class RepliesServiceImpl implements RepliesService {
 			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
 		}
 		
-		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
-		if (reply == null) {
-			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
-		}
-		
 		int deletedRows = this.repliesDao.deleteReplyByReplyId(articleId, replyId);
 		if (deletedRows == 0) {
 			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
 		}
 		
+		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
 		int deleteCount = this.multipartHandler.deleteFiles(reply.getFileSetId());
 		System.out.println(deleteCount + "개의 파일이 삭제되었습니다.");
 		return replyId;
