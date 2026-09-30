@@ -21,49 +21,61 @@ import lombok.AllArgsConstructor;
 public class RepliesController {
 
 	private RepliesService repliesService;
-	
-	// GET /replies/{게시글아이디} 
+
+	// GET /replies/{게시글아이디}
 	// 게시글에 등록된 댓글을 반환.
 	@GetMapping("/replies/{articleId}")
 	public ApiResponse<ReplyListVO> getReplies(@PathVariable String articleId) {
-		return ApiResponse.OK(this.repliesService.readAllRepliesByArticleId(articleId));
+		try {
+			return ApiResponse.OK(this.repliesService.readAllRepliesByArticleId(articleId));
+		} catch (IllegalArgumentException iae) {
+			return ApiResponse.FORBIDDEN(iae.getMessage());
+		}
 	}
-	
+
 	// POST /replies/{게시글아이디}
 	// 게시글에 댓글 작성 (파일 첨부 가능)
 	@PostMapping("/replies/{articleId}")
-	public ApiResponse<RepliesVO> makeNewReply(
-				@PathVariable String articleId,
-				RegistRepliesVO registRepliesVO) {
-		return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
+	public ApiResponse<RepliesVO> makeNewReply(@PathVariable String articleId, RegistRepliesVO registRepliesVO) {
+		try {
+			return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
+		} catch (IllegalArgumentException iae) {
+			return ApiResponse.FORBIDDEN(iae.getMessage());
+		}
 	}
-	
+
 	// PUT /replies/{게시글아이디}/{댓글아이디}
 	// 게시글에 등록된 댓글을 수정 (파일 첨부 가능)
 	@PutMapping("/replies/{articleId}/{replyId}")
-	public ApiResponse<RepliesVO> updateReply(
-				@PathVariable String articleId,
-				@PathVariable String replyId,
-				ModifyRepliesVO modifyRepliesVO) {
-		return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));
+	public ApiResponse<RepliesVO> updateReply(@PathVariable String articleId, @PathVariable String replyId,
+			ModifyRepliesVO modifyRepliesVO) {
+		try {
+			return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));
+		} catch (IllegalArgumentException iae) {
+			return ApiResponse.FORBIDDEN(iae.getMessage());
+		}
 	}
-	
+
 	// DELETE /replies/{게시글아이디}/{댓글아이디}
 	// 게시글에 등록된 댓글 하나를 삭제
 	// 첨부된 파일 제거
 	@DeleteMapping("/replies/{articleId}/{replyId}")
-	public ApiResponse<String> deleteReply(
-				@PathVariable String articleId,
-				@PathVariable String replyId) {
-		return ApiResponse.OK(this.repliesService.deleteReply(articleId, replyId));
+	public ApiResponse<String> deleteReply(@PathVariable String articleId, @PathVariable String replyId) {
+		try {
+			return ApiResponse.OK(this.repliesService.deleteReply(articleId, replyId));
+		} catch (IllegalArgumentException iae) {
+			return ApiResponse.FORBIDDEN(iae.getMessage());
+		}
 	}
-	
+
 	// PUT /replies/{게시글아이디}/recommend/{댓글아이디}
 	// 게시글에 등록된 댓글 하나를 추천.
 	@PutMapping("/replies/{articleId}/recommend/{replyId}")
-	public ApiResponse<Long> recommendOneReply(
-				@PathVariable String articleId,
-				@PathVariable String replyId) {
-		return ApiResponse.OK(this.repliesService.recommendOneReply(articleId, replyId));
+	public ApiResponse<Long> recommendOneReply(@PathVariable String articleId, @PathVariable String replyId) {
+		try {
+			return ApiResponse.OK(this.repliesService.recommendOneReply(articleId, replyId));
+		} catch (IllegalArgumentException iae) {
+			return ApiResponse.FORBIDDEN(iae.getMessage());
+		}
 	}
 }

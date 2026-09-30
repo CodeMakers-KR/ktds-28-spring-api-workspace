@@ -2,6 +2,8 @@ package com.ktdsuniversity.edu.replies.service;
 
 import org.springframework.stereotype.Service;
 
+import com.ktdsuniversity.edu.articles.dao.ArticlesDao;
+import com.ktdsuniversity.edu.articles.vo.response.ArticlesVO;
 import com.ktdsuniversity.edu.files.components.MultipartHandler;
 import com.ktdsuniversity.edu.replies.dao.RepliesDao;
 import com.ktdsuniversity.edu.replies.vo.request.ModifyRepliesVO;
@@ -15,11 +17,18 @@ import lombok.AllArgsConstructor;
 @Service
 public class RepliesServiceImpl implements RepliesService {
 
+	private ArticlesDao articlesDao;
 	private RepliesDao repliesDao;
 	private MultipartHandler multipartHandler;
 	
 	@Override
 	public ReplyListVO readAllRepliesByArticleId(String articleId) {
+		
+		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
+		if (articles == null) {
+			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+		}
+		
 		ReplyListVO list = new ReplyListVO();
 		list.setReplyCount(this.repliesDao.selectRepliesCount(articleId));
 		list.setReplyList(this.repliesDao.selectAllRepliesByArticleId(articleId));
@@ -28,6 +37,11 @@ public class RepliesServiceImpl implements RepliesService {
 
 	@Override
 	public RepliesVO createNewReply(String articleId, RegistRepliesVO registRepliesVO) {
+		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
+		if (articles == null) {
+			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+		}
+		
 		String fileSetId = this.multipartHandler.storeFiles(
 				registRepliesVO.getFile(), 
 				registRepliesVO.getEmail());
@@ -45,7 +59,15 @@ public class RepliesServiceImpl implements RepliesService {
 
 	@Override
 	public RepliesVO updateReply(String articleId, String replyId, ModifyRepliesVO modifyRepliesVO) {
+		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
+		if (articles == null) {
+			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+		}
+		
 		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
+		if (reply == null) {
+			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+		}
 		
 		String fileSetId = this.multipartHandler.storeFiles(
 				modifyRepliesVO.getFile(), 
@@ -63,7 +85,15 @@ public class RepliesServiceImpl implements RepliesService {
 
 	@Override
 	public String deleteReply(String articleId, String replyId) {
+		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
+		if (articles == null) {
+			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+		}
+		
 		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
+		if (reply == null) {
+			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+		}
 		
 		int deletedRows = this.repliesDao.deleteReplyByReplyId(articleId, replyId);
 		if (deletedRows == 0) {
@@ -77,6 +107,12 @@ public class RepliesServiceImpl implements RepliesService {
 
 	@Override
 	public long recommendOneReply(String articleId, String replyId) {
+		
+		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
+		if (articles == null) {
+			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+		}
+		
 		int updatedRows = this.repliesDao.updateIncreaseRecommendCount(articleId, replyId);
 		if (updatedRows == 0) {
 			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
