@@ -48,7 +48,7 @@ public class MultipartHandler {
 	 */
 	public String storeFiles(List<MultipartFile> file, String email, String fileSetId) {
 
-		if (file == null || file.stream().allMatch(f -> f.isEmpty())) {
+		if (this.isEmpty(file)) {
 			return fileSetId;
 		}
 
@@ -64,11 +64,7 @@ public class MultipartHandler {
 			fileSetId = fileSetVO.getId();
 		}
 
-		String homeDirectory = System.getProperty("user.home");
-		File uploadPath = new File(homeDirectory, this.uploadFolderName);
-		if (!uploadPath.exists()) {
-			uploadPath.mkdirs();
-		}
+		File uploadPath = this.getUploadPath();
 
 		File storeFile = null;
 		RequestFileVO fileVO = null;
@@ -100,8 +96,7 @@ public class MultipartHandler {
 
 		// 조회된 파일의 이름으로 파일 물리적 삭제 진행.
 		// 파일이 저장되어있는 위치정보 필요.
-		String homeDirectory = System.getProperty("user.home");
-		File uploadPath = new File(homeDirectory, this.uploadFolderName);
+		File uploadPath = this.getUploadPath();
 
 		for (FilesVO file : files) {
 			new File(uploadPath, file.getObfuscateFileName()).delete();
@@ -110,6 +105,19 @@ public class MultipartHandler {
 		// fileSetId로 FILES 테이블의 DEL_YN을 Y로 변경한다.
 		int deleteCount = this.filesDao.deleteFilesByFileSetId(fileSetId);
 		return deleteCount;
+	}
+
+	private boolean isEmpty(List<MultipartFile> file) {
+		return file == null || file.stream().allMatch(f -> f.isEmpty());
+	}
+
+	private File getUploadPath() {
+		String homeDirectory = System.getProperty("user.home");
+		File uploadPath = new File(homeDirectory, this.uploadFolderName);
+		if (!uploadPath.exists()) {
+			uploadPath.mkdirs();
+		}
+		return uploadPath;
 	}
 
 }
