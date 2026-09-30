@@ -48,7 +48,7 @@ public class MultipartHandler {
 	 */
 	public String storeFiles(List<MultipartFile> file, String email, String fileSetId) {
 
-		if (file == null) {
+		if (file == null || file.stream().allMatch(f -> f.isEmpty())) {
 			return fileSetId;
 		}
 
