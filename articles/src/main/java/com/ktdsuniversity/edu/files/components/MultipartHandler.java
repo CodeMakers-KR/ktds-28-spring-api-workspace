@@ -1,11 +1,16 @@
 package com.ktdsuniversity.edu.files.components;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -118,6 +123,29 @@ public class MultipartHandler {
 			uploadPath.mkdirs();
 		}
 		return uploadPath;
+	}
+	
+	/**
+	 * 파일 다운로드를 위한 파일명 변환
+	 * 다운로드할 때 파일명에 한글이 있을 경우 사라지는 현상을 방지.
+	 * @param filename
+	 * @return
+	 */
+	public String getFileName(String filename) {
+		return URLEncoder.encode(filename, Charset.defaultCharset());
+	}
+	
+	/**
+	 * 파일 다운로드를 위한 스트림 생성
+	 * @param file
+	 * @return
+	 */
+	public InputStreamResource getInputStreamResource(File file) {
+		try {
+			return new InputStreamResource(new FileInputStream(file));
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException("존재하지 않는 파일입니다.");
+		}
 	}
 
 }
