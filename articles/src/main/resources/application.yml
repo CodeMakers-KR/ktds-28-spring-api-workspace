@@ -3,6 +3,11 @@ logging:
     root: debug
 
 spring:
+  # file upload 용량 제한하기
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 10MB
   application:
     name: articles
   # Database 설정
@@ -16,3 +21,20 @@ spring:
 mybatis:
   config-location: classpath:config/mybatis-config.xml
   mapper-locations: classpath:com/ktdsuniversity/edu/**/dao/mapper/*DaoMapper.xml
+
+
+# Custom 환경 설정
+# 사용하려는 Spring Bean에서 @Value 로 사용 가능.
+app:
+  multipart:
+    store-path: uploadFiles
+
+  
+  
+  
+  
+  
+  
+  
+  
+  

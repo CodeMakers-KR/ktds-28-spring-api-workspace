@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,13 +14,18 @@ import com.ktdsuniversity.edu.files.vo.request.RequestFileSetVO;
 import com.ktdsuniversity.edu.files.vo.request.RequestFileVO;
 import com.ktdsuniversity.edu.files.vo.response.FilesVO;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
+//@AllArgsConstructor
 @Component
 public class MultipartHandler {
 
+	@Value("${app.multipart.store-path}")
+	private String uploadFolderName;
+
 	private FilesDao filesDao;
+
+	public MultipartHandler(FilesDao filesDao) {
+		this.filesDao = filesDao;
+	}
 
 	/**
 	 * 파일을 업로드하고 FILE_SET_ID를 발급한다.
@@ -59,7 +65,7 @@ public class MultipartHandler {
 		}
 
 		String homeDirectory = System.getProperty("user.home");
-		File uploadPath = new File(homeDirectory, "uploadFiles");
+		File uploadPath = new File(homeDirectory, this.uploadFolderName);
 		if (!uploadPath.exists()) {
 			uploadPath.mkdirs();
 		}
@@ -86,34 +92,24 @@ public class MultipartHandler {
 
 		return fileSetId;
 	}
-	
+
 	public int deleteFiles(String fileSetId) {
 		// 파일의 물리적 삭제 진행.
 		// FILES에서 FILE_SET_ID를 이용해 파일의 난독화된 이름을 조회.
 		List<FilesVO> files = this.filesDao.selectFilesByFileSetId(fileSetId);
-		
+
 		// 조회된 파일의 이름으로 파일 물리적 삭제 진행.
 		// 파일이 저장되어있는 위치정보 필요.
 		String homeDirectory = System.getProperty("user.home");
-		File uploadPath = new File(homeDirectory, "uploadFiles");
-		
+		File uploadPath = new File(homeDirectory, this.uploadFolderName);
+
 		for (FilesVO file : files) {
-			new File(uploadPath, file.getObfuscateFileName())
-					.delete();
+			new File(uploadPath, file.getObfuscateFileName()).delete();
 		}
-		
+
 		// fileSetId로 FILES 테이블의 DEL_YN을 Y로 변경한다.
 		int deleteCount = this.filesDao.deleteFilesByFileSetId(fileSetId);
 		return deleteCount;
 	}
-	
-	
 
 }
-
-
-
-
-
-
-
