@@ -144,7 +144,7 @@ public class MultipartHandler {
 	
 	/**
 	 * 파일 다운로드를 위한 스트림 생성
-	 * @param file
+	 * @param filename
 	 * @return
 	 */
 	public InputStreamResource getInputStreamResource(String filename) {
