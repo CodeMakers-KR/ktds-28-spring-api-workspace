@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class MembersServiceImpl implements MembersService {
 
 	@Value("${app.encrypt.aes.key}")
-	private String AES_KEY;
+	private String aesSecretKey;
 	
 	private final MembersDao membersDao;
 
@@ -36,11 +36,11 @@ public class MembersServiceImpl implements MembersService {
 		}
 		
 		String rawName = registMembersVO.getName();
-		String encryptedName = AES.encode(AES_KEY, rawName);
+		String encryptedName = AES.encode(this.aesSecretKey, rawName);
 		registMembersVO.setName(encryptedName);
 		
 		String rawNickname = registMembersVO.getNickname();
-		String encryptedNickname = AES.encode(AES_KEY, rawNickname);
+		String encryptedNickname = AES.encode(this.aesSecretKey, rawNickname);
 		registMembersVO.setNickname(encryptedNickname);
 		
 		String rawPassword = registMembersVO.getPassword();
@@ -56,8 +56,8 @@ public class MembersServiceImpl implements MembersService {
 		}
 		
 		MembersVO newMember = this.membersDao.selectMemberByEmail(email);
-		newMember.setName( AES.decode(AES_KEY, newMember.getName()) );
-		newMember.setNickname( AES.decode(AES_KEY, newMember.getNickname()) );
+		newMember.setName( AES.decode(this.aesSecretKey, newMember.getName()) );
+		newMember.setNickname( AES.decode(this.aesSecretKey, newMember.getNickname()) );
 		return newMember;
 	}
 	
