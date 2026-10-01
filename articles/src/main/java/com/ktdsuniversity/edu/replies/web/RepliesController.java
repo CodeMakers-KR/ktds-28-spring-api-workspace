@@ -1,7 +1,9 @@
 package com.ktdsuniversity.edu.replies.web;
 
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -14,6 +16,7 @@ import com.ktdsuniversity.edu.replies.vo.request.RegistRepliesVO;
 import com.ktdsuniversity.edu.replies.vo.response.RepliesVO;
 import com.ktdsuniversity.edu.replies.vo.response.ReplyListVO;
 
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
 @RestController // (@Controller + @ReponseBody) 메소드에 @ResponseBody 생략 가능.
@@ -32,7 +35,15 @@ public class RepliesController {
 	}
 	
 	@PostMapping("/articles/{articleId}/replies")
-	public ApiResponse<RepliesVO> makeNewReply(@PathVariable String articleId, RegistRepliesVO registRepliesVO) {
+	public ApiResponse<RepliesVO> makeNewReply(
+			@PathVariable String articleId, 
+			@Valid @ModelAttribute RegistRepliesVO registRepliesVO,
+			BindingResult validationResult) {
+		
+		if (validationResult.hasErrors()) {
+			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
+		}
+		
 		try {
 			return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
 		} catch (IllegalArgumentException iae) {
@@ -41,8 +52,16 @@ public class RepliesController {
 	}
 
 	@PutMapping("/articles/{articleId}/replies/{replyId}")
-	public ApiResponse<RepliesVO> updateReply(@PathVariable String articleId, @PathVariable String replyId,
-			ModifyRepliesVO modifyRepliesVO) {
+	public ApiResponse<RepliesVO> updateReply(
+			@PathVariable String articleId, 
+			@PathVariable String replyId,
+			@Valid @ModelAttribute ModifyRepliesVO modifyRepliesVO,
+			BindingResult validationResult) {
+		
+		if (validationResult.hasErrors()) {
+			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
+		}
+		
 		try {
 			return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));
 		} catch (IllegalArgumentException iae) {
