@@ -17,6 +17,7 @@ import com.ktdsuniversity.edu.replies.vo.response.RepliesVO;
 import com.ktdsuniversity.edu.replies.vo.response.ReplyListVO;
 
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 
 @RestController // (@Controller + @ReponseBody) 메소드에 @ResponseBody 생략 가능.
@@ -26,7 +27,9 @@ public class RepliesController {
 	private RepliesService repliesService;
 
 	@GetMapping("/articles/{articleId}/replies")
-	public ApiResponse<ReplyListVO> getReplies(@PathVariable String articleId) {
+	public ApiResponse<ReplyListVO> getReplies(
+			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.") 
+			@PathVariable String articleId) {
 		try {
 			return ApiResponse.OK(this.repliesService.readAllRepliesByArticleId(articleId));
 		} catch (IllegalArgumentException iae) {
@@ -36,6 +39,7 @@ public class RepliesController {
 	
 	@PostMapping("/articles/{articleId}/replies")
 	public ApiResponse<RepliesVO> makeNewReply(
+			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String articleId, 
 			@Valid @ModelAttribute RegistRepliesVO registRepliesVO,
 			BindingResult validationResult) {
@@ -53,7 +57,9 @@ public class RepliesController {
 
 	@PutMapping("/articles/{articleId}/replies/{replyId}")
 	public ApiResponse<RepliesVO> updateReply(
+			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String articleId, 
+			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String replyId,
 			@Valid @ModelAttribute ModifyRepliesVO modifyRepliesVO,
 			BindingResult validationResult) {
@@ -70,7 +76,11 @@ public class RepliesController {
 	}
 
 	@DeleteMapping("/articles/{articleId}/replies/{replyId}")
-	public ApiResponse<String> deleteReply(@PathVariable String articleId, @PathVariable String replyId) {
+	public ApiResponse<String> deleteReply(
+			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
+			@PathVariable String articleId, 
+			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
+			@PathVariable String replyId) {
 		try {
 			return ApiResponse.OK(this.repliesService.deleteReply(articleId, replyId));
 		} catch (IllegalArgumentException iae) {
@@ -79,7 +89,11 @@ public class RepliesController {
 	}
 
 	@PutMapping("/articles/{articleId}/replies/recommend/{replyId}")
-	public ApiResponse<Long> recommendOneReply(@PathVariable String articleId, @PathVariable String replyId) {
+	public ApiResponse<Long> recommendOneReply(
+			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
+			@PathVariable String articleId, 
+			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
+			@PathVariable String replyId) {
 		try {
 			return ApiResponse.OK(this.repliesService.recommendOneReply(articleId, replyId));
 		} catch (IllegalArgumentException iae) {
