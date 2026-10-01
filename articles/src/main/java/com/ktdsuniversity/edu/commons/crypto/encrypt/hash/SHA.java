@@ -1,4 +1,4 @@
-package com.ktdsuniversity.edu.commons.encrypt.hash;
+package com.ktdsuniversity.edu.commons.crypto.encrypt.hash;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
