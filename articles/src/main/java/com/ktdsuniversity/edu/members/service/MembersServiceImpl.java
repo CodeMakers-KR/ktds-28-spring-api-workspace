@@ -1,6 +1,5 @@
 package com.ktdsuniversity.edu.members.service;
 
-import com.ktdsuniversity.edu.files.components.MultipartHandler;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -19,8 +18,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class MembersServiceImpl implements MembersService {
-
-	private final MultipartHandler multipartHandler;
 
 	@Value("${app.encrypt.aes.key}")
 	private String aesSecretKey;
@@ -130,14 +127,35 @@ public class MembersServiceImpl implements MembersService {
 		}
 	}
 	
-	
-	public static void main(String[] args) {
-		LocalDateTime now = LocalDateTime.now();
-		System.out.println(now);
-		
-		LocalDateTime blockDate = LocalDateTime.parse("2026-10-02 10:43:08", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-		System.out.println(blockDate);
+	@Override
+	public String updateLogoutStatus(String email) {
+		int updatedRows = this.membersDao.updateLogoutStatus(email);
+		if (updatedRows > 0) {
+			return email;
+		}
+		return null;
 	}
+	
+	@Override
+	public String deleteMember(String email, String password) {
+		
+		MembersVO loggedMember = this.membersDao.selectMemberByEmail(email);
+		
+		String storedSalt = loggedMember.getSalt();
+		String encryptedPassword = SHA.getEncrypt(password, storedSalt);
+		
+		if (!encryptedPassword.equals(loggedMember.getPassword())) {
+			throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+		}
+		
+		int deleteRows = this.membersDao.deleteMember(email);
+		if (deleteRows > 0) {
+			this.membersDao.updateLogoutStatus(email);
+			return loggedMember.getEmail();
+		}
+		return null;
+	}
+	
 }
 
 

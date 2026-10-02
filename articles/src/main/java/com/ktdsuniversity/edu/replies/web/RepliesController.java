@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ktdsuniversity.edu.commons.util.ApiResponse;
+import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 import com.ktdsuniversity.edu.replies.service.RepliesService;
 import com.ktdsuniversity.edu.replies.vo.request.ModifyRepliesVO;
 import com.ktdsuniversity.edu.replies.vo.request.RegistRepliesVO;
 import com.ktdsuniversity.edu.replies.vo.response.RepliesVO;
 import com.ktdsuniversity.edu.replies.vo.response.ReplyListVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -42,11 +44,19 @@ public class RepliesController {
 			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String articleId, 
 			@Valid @ModelAttribute RegistRepliesVO registRepliesVO,
-			BindingResult validationResult) {
+			BindingResult validationResult,
+			HttpSession session) {
 		
 		if (validationResult.hasErrors()) {
 			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
 		}
+		
+		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
+		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
+		if (membersVO == null) {
+			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
+		}
+		registRepliesVO.setEmail( membersVO.getEmail() );
 		
 		try {
 			return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
@@ -62,11 +72,19 @@ public class RepliesController {
 			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String replyId,
 			@Valid @ModelAttribute ModifyRepliesVO modifyRepliesVO,
-			BindingResult validationResult) {
+			BindingResult validationResult,
+			HttpSession session) {
 		
 		if (validationResult.hasErrors()) {
 			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
 		}
+		
+		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
+		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
+		if (membersVO == null) {
+			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
+		}
+		modifyRepliesVO.setEmail( membersVO.getEmail() );
 		
 		try {
 			return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));

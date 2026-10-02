@@ -16,7 +16,9 @@ import com.ktdsuniversity.edu.articles.vo.request.RegistArticleVO;
 import com.ktdsuniversity.edu.articles.vo.response.ArticleListVO;
 import com.ktdsuniversity.edu.articles.vo.response.ArticlesVO;
 import com.ktdsuniversity.edu.commons.util.ApiResponse;
+import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -64,7 +66,8 @@ public class ArticlesController {
 			// Command Object
 			// 클라이언트가 컨트롤러로 전송한 파라미터(폼파라미터, 쿼리스트링파라미터)를 자동으로 받아오는 역할.
 			@Valid @ModelAttribute RegistArticleVO registArticleVO,
-			BindingResult validationResult
+			BindingResult validationResult,
+			HttpSession session
 	// 클라이언트가 컨트롤러로 전송한 파라미터(폼파라미터, 쿼리스트링파라미터)를 하나씩 받아오는 역할.
 	// , @RequestParam List<MultipartFile> file
 	) {
@@ -75,6 +78,12 @@ public class ArticlesController {
 			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
 		}
 		
+		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
+		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
+		if (membersVO == null) {
+			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
+		}
+		registArticleVO.setEmail( membersVO.getEmail() );
 		
 		try {
 			ArticlesVO result = this.articlesService.createNewArticle(registArticleVO);
@@ -89,10 +98,18 @@ public class ArticlesController {
 	public ApiResponse<ArticlesVO> updateArticle(
 			@PathVariable String articleId,
 			@Valid @ModelAttribute ModifyArticleVO modifyArticleVO,
-			BindingResult validationResult) {
+			BindingResult validationResult,
+			HttpSession session) {
 		if (validationResult.hasErrors()) {
 			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
 		}
+		
+		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
+		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
+		if (membersVO == null) {
+			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
+		}
+		modifyArticleVO.setEmail( membersVO.getEmail() );
 		
 		try {
 			ArticlesVO result = this.articlesService.updateArticle(articleId, modifyArticleVO);

@@ -10,4 +10,8 @@ public interface MembersService {
 
 	MembersVO readMember(LoginMemberVO loginMemberVO);
 
+	String updateLogoutStatus(String email);
+
+	String deleteMember(String email, String password);
+
 }

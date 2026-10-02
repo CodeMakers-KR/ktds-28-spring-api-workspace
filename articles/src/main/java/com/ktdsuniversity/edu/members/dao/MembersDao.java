@@ -24,4 +24,8 @@ public interface MembersDao {
 
 	int updateResetBlock(String email);
 
+	int updateLogoutStatus(String email);
+
+	int deleteMember(String email);
+
 }

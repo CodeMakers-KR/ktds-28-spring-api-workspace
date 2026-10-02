@@ -98,6 +98,22 @@
          WHERE EMAIL = #{_parameter}
     </update>
     
+    <update id="updateLogoutStatus"
+            parameterType="string">
+        UPDATE MEMBERS
+           SET LATEST_LOGOUT_DATE = SYSDATE
+             , LOGIN_YN = 'N'
+         WHERE EMAIL = #{_parameter}
+    </update>
+    
+    <update id="deleteMember"
+            parameterType="string">
+        UPDATE MEMBERS
+           SET DEL_YN = 'Y'
+             , PASSWORD = 'EXPIRED_USER'
+             , SALT = 'EXPIRED_USER'
+         WHERE EMAIL = #{_parameter}
+    </update>
 </mapper>
 
 
