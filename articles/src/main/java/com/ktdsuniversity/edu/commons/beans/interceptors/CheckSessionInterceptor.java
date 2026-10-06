@@ -46,7 +46,7 @@ public class CheckSessionInterceptor implements HandlerInterceptor {
 			// 세션이 없으면 컨트롤러를 실행 X ==> 클라이언트에게 예외 메세지 전달.
 			return false;
 		}
-		return HandlerInterceptor.super.preHandle(request, response, handler);
+		// return HandlerInterceptor.super.preHandle(request, response, handler);
 	}
 	
 }
