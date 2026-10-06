@@ -66,8 +66,7 @@ public class ArticlesController {
 			// Command Object
 			// 클라이언트가 컨트롤러로 전송한 파라미터(폼파라미터, 쿼리스트링파라미터)를 자동으로 받아오는 역할.
 			@Valid @ModelAttribute RegistArticleVO registArticleVO,
-			BindingResult validationResult,
-			HttpSession session
+			BindingResult validationResult
 	// 클라이언트가 컨트롤러로 전송한 파라미터(폼파라미터, 쿼리스트링파라미터)를 하나씩 받아오는 역할.
 	// , @RequestParam List<MultipartFile> file
 	) {
@@ -79,10 +78,6 @@ public class ArticlesController {
 		}
 		
 		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
-		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
-		if (membersVO == null) {
-			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
-		}
 		registArticleVO.setEmail( membersVO.getEmail() );
 		
 		try {
@@ -98,17 +93,13 @@ public class ArticlesController {
 	public ApiResponse<ArticlesVO> updateArticle(
 			@PathVariable String articleId,
 			@Valid @ModelAttribute ModifyArticleVO modifyArticleVO,
-			BindingResult validationResult,
-			HttpSession session) {
+			BindingResult validationResult) {
+		
 		if (validationResult.hasErrors()) {
 			return ApiResponse.BAD_REQUEST(validationResult.getFieldErrors());
 		}
 		
 		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
-		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
-		if (membersVO == null) {
-			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
-		}
 		modifyArticleVO.setEmail( membersVO.getEmail() );
 		
 		try {

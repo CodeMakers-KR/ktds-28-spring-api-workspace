@@ -71,11 +71,6 @@ public class MembersController {
 	@GetMapping("/members/logout")
 	public ApiResponse<String> logout(HttpSession session) {
 		
-		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
-		if (membersVO == null) {
-			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
-		}
-		
 		// session 만료 처리.
 		// 만료된 session의 ID는 더 이상 사용할 수 없음.
 		session.invalidate();
@@ -87,11 +82,6 @@ public class MembersController {
 	
 	@DeleteMapping("/members")
 	public ApiResponse<String> exitMember(HttpSession session, @RequestParam String password) {
-		
-		MembersVO membersVO = (MembersVO) session.getAttribute("__LOGIN_USER__");
-		if (membersVO == null) {
-			throw new IllegalArgumentException("로그인이 필요한 기능입니다.");
-		}
 		
 		String email = this.membersService.deleteMember(membersVO.getEmail(), password);
 		if (email != null) {

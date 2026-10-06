@@ -116,7 +116,7 @@ public class MembersServiceImpl implements MembersService {
 		
 		// 비밀번호 불일치
 		int updateRows = this.membersDao.updateLoginFailed( membersVO.getEmail() );
-		System.out.println(membersVO.getEmail() + " 로그인 실패!");
+		System.out.println(updateRows + ", " +  membersVO.getEmail() + " 로그인 실패!");
 		
 		int blockUpdateRows = this.membersDao.updateBlock( membersVO.getEmail() );
 		if (blockUpdateRows > 0) {
