@@ -19,6 +19,7 @@ public class FilesServiceImpl implements FilesService {
 	
 	@Override
 	public FilesVO readAttachFile(String fileSetId, String fileId) {
+		
 		FilesVO filesVO = this.filesDao.selectAttachFile(fileSetId, fileId);
 		if (filesVO == null) {
 			throw new IllegalArgumentException("잘못된 요청입니다.");

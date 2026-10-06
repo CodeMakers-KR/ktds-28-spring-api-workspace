@@ -71,6 +71,7 @@ public class MembersServiceImpl implements MembersService {
 
 	@Override
 	public MembersVO readMember(LoginMemberVO loginMemberVO) {
+		
 		MembersVO membersVO = this.membersDao.selectMemberByEmail(loginMemberVO.getEmail());
 
 		if (membersVO == null) {
