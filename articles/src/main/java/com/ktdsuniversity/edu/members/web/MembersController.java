@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu.members.web;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.ktdsuniversity.edu.commons.util.ApiResponse;
 import com.ktdsuniversity.edu.members.service.MembersService;
@@ -23,9 +26,11 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class MembersController {
 
+	private static final Logger logger = LoggerFactory.getLogger(MembersController.class);
+	
 	private MembersService membersService;
 	
-	@PostMapping("/members")
+	@PostMapping("/members/signup")
 	public ApiResponse<MembersVO> createNewMember(
 					@Valid @RequestBody RegistMembersVO registMembersVO,
 					BindingResult validationResults
@@ -49,8 +54,7 @@ public class MembersController {
 							@Valid @ModelAttribute LoginMemberVO loginMemberVO
 						  , BindingResult validationResult
 						  , HttpSession session) {
-		
-		System.out.println(session.getId() + " <-- SessionID ");
+		logger.debug("{} <-- SessionID", session.getId());
 		
 		if (validationResult.hasErrors() ) {
 			return ApiResponse.BAD_REQUEST( validationResult.getFieldErrors() );
@@ -69,7 +73,9 @@ public class MembersController {
 	
 	
 	@GetMapping("/members/logout")
-	public ApiResponse<String> logout(HttpSession session) {
+	public ApiResponse<String> logout(HttpSession session,
+			// HttpSession에 등록된 __LOGIN_USER__ 에 있는 MembersVO를 파라미터로 받아와라!
+			@SessionAttribute("__LOGIN_USER__") MembersVO membersVO) {
 		
 		// session 만료 처리.
 		// 만료된 session의 ID는 더 이상 사용할 수 없음.
@@ -81,7 +87,11 @@ public class MembersController {
 	}
 	
 	@DeleteMapping("/members")
-	public ApiResponse<String> exitMember(HttpSession session, @RequestParam String password) {
+	public ApiResponse<String> exitMember(
+			HttpSession session, 
+			@RequestParam String password,
+			// HttpSession에 등록된 __LOGIN_USER__ 에 있는 MembersVO를 파라미터로 받아와라!
+			@SessionAttribute("__LOGIN_USER__") MembersVO membersVO) {
 		
 		String email = this.membersService.deleteMember(membersVO.getEmail(), password);
 		if (email != null) {

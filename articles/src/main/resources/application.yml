@@ -1,6 +1,6 @@
-logging:
-  level:
-    root: info
+#logging:
+#  level:
+#    root: info
 
 spring:
   # file upload 용량 제한하기

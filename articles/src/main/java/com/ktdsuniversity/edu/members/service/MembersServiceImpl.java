@@ -3,6 +3,8 @@ package com.ktdsuniversity.edu.members.service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MembersServiceImpl implements MembersService {
 
+	private static final Logger logger = LoggerFactory.getLogger(MembersServiceImpl.class);
+	
 	@Value("${app.encrypt.aes.key}")
 	private String aesSecretKey;
 	
@@ -87,7 +91,7 @@ public class MembersServiceImpl implements MembersService {
 				// 차단 후 1시간 경과.
 				// 로그인 실패횟수 0으로 초기화 & 차단 여부 N으로 수정
 				int updateRows = this.membersDao.updateResetBlock(loginMemberVO.getEmail());
-				System.out.println(updateRows + "건이 블락 해제되었음.");
+				logger.info("{}건이 블락 해제 되었음.", updateRows);
 			} else {
 				throw new IllegalArgumentException("이메일 또는 비밀번호가 일치하지 않습니다.");
 			}
@@ -116,7 +120,7 @@ public class MembersServiceImpl implements MembersService {
 		
 		// 비밀번호 불일치
 		int updateRows = this.membersDao.updateLoginFailed( membersVO.getEmail() );
-		System.out.println(updateRows + ", " +  membersVO.getEmail() + " 로그인 실패!");
+		logger.info("{}, {} 로그인 실패!", updateRows, membersVO.getEmail());
 		
 		int blockUpdateRows = this.membersDao.updateBlock( membersVO.getEmail() );
 		if (blockUpdateRows > 0) {

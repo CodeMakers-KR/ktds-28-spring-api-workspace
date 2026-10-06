@@ -1,5 +1,7 @@
 package com.ktdsuniversity.edu.replies.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,6 +24,8 @@ import lombok.AllArgsConstructor;
 @Service
 public class RepliesServiceImpl implements RepliesService {
 
+	private static final Logger logger = LoggerFactory.getLogger(RepliesServiceImpl.class);
+	
 	private ArticlesDao articlesDao;
 	private RepliesDao repliesDao;
 	private MultipartHandler multipartHandler;
@@ -53,7 +57,7 @@ public class RepliesServiceImpl implements RepliesService {
 		registRepliesVO.setFileSetId(fileSetId);
 		
 		int insertedRows = this.repliesDao.insertNewReply(articleId, registRepliesVO);
-		System.out.println(insertedRows + "개의 row가 생성되었습니다.");
+		logger.info("{}개의 row가 생성되었습니다.", insertedRows);
 		
 		if (insertedRows == 0) {
 			throw new IllegalArgumentException("입력값이 유효하지 않습니다.");
@@ -112,7 +116,7 @@ public class RepliesServiceImpl implements RepliesService {
 		}
 		
 		int deleteCount = this.multipartHandler.deleteFiles(reply.getFileSetId());
-		System.out.println(deleteCount + "개의 파일이 삭제되었습니다.");
+		logger.info("{}개의 파일이 삭제되었습니다.", deleteCount);
 		return replyId;
 	}
 

@@ -2,6 +2,8 @@ package com.ktdsuniversity.edu.articles.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -22,6 +24,8 @@ import lombok.AllArgsConstructor;
 @Service
 public class ArticlesServiceImpl implements ArticlesService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ArticlesServiceImpl.class);
+	
 	private ArticlesDao articlesDao;
 	private MultipartHandler multipartHandler;
 	
@@ -39,6 +43,8 @@ public class ArticlesServiceImpl implements ArticlesService {
 	@Override
 	public ArticlesVO createNewArticle(RegistArticleVO registArticleVO) {
 		
+		logger.debug(registArticleVO.toString());
+		
 		String fileSetId = this.multipartHandler.storeFiles(
 									registArticleVO.getFile(), 
 									registArticleVO.getEmail());
@@ -49,7 +55,8 @@ public class ArticlesServiceImpl implements ArticlesService {
 		// Insert한 게시글의 ID로 게시글 정보를 조회한다.
 		// -> Insert한 게시글의 ID가 뭔지 모른다.
 		
-		System.out.println(insertedRows + "개의 row가 생성되었습니다.");
+//		logger.info(insertedRows + "개의 row가 생성되었습니다.");
+		logger.info("{}개의 row가 생성되었습니다.", insertedRows);
 		
 		if (insertedRows > 0) {
 			return this.articlesDao.selectArticleByArticleId( registArticleVO.getId() );
@@ -103,7 +110,7 @@ public class ArticlesServiceImpl implements ArticlesService {
 		}
 		
 		int deleteCount = this.multipartHandler.deleteFiles(article.getFileSetId());
-		System.out.println(deleteCount + "개의 파일이 삭제되었습니다.");
+		logger.info("{}개의 파일이 삭제되었습니다.", deleteCount);
 		return articleId;
 	}
 	

@@ -26,6 +26,12 @@ public class CheckSessionInterceptor implements HandlerInterceptor {
 			return true;
 		} else {
 			
+			// Response의 Content-Type을 JSON (application/json)  으로 설정
+			response.setContentType("application/json");
+			
+			// 클라이언트가 표현할 인코딩을 UTF-8로 설정
+			response.setCharacterEncoding("UTF-8");
+			
 			// 클라이언트에게 응답메세지를 직접 전달할 수 있는 객체
 			// Servlet Code를 작성할 때에 필수 코드.
 			PrintWriter printWriter = response.getWriter();
