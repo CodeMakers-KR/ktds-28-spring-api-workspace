@@ -8,6 +8,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.ktdsuniversity.edu.articles.dao.ArticlesDao;
 import com.ktdsuniversity.edu.articles.vo.response.ArticlesVO;
+import com.ktdsuniversity.edu.commons.exceptions.ArticleException;
+import com.ktdsuniversity.edu.commons.exceptions.enums.ArticleCodes;
+import com.ktdsuniversity.edu.commons.exceptions.enums.ExceptionType;
 import com.ktdsuniversity.edu.files.components.MultipartHandler;
 import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 import com.ktdsuniversity.edu.replies.dao.RepliesDao;
@@ -35,7 +38,7 @@ public class RepliesServiceImpl implements RepliesService {
 		
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
 		if (articles == null) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		ReplyListVO list = new ReplyListVO();
@@ -48,7 +51,7 @@ public class RepliesServiceImpl implements RepliesService {
 	public RepliesVO createNewReply(String articleId, RegistRepliesVO registRepliesVO) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
 		if (articles == null) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		String fileSetId = this.multipartHandler.storeFiles(
@@ -60,7 +63,7 @@ public class RepliesServiceImpl implements RepliesService {
 		logger.info("{}개의 row가 생성되었습니다.", insertedRows);
 		
 		if (insertedRows == 0) {
-			throw new IllegalArgumentException("입력값이 유효하지 않습니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.SYSTEM_ERROR);
 		}
 		
 		return this.repliesDao.selectReplyByReplyId(articleId, registRepliesVO.getId());
@@ -70,12 +73,12 @@ public class RepliesServiceImpl implements RepliesService {
 	public RepliesVO updateReply(String articleId, String replyId, ModifyRepliesVO modifyRepliesVO) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
 		if (articles == null) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
 		if (reply == null) {
-			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		String fileSetId = this.multipartHandler.storeFiles(
@@ -86,7 +89,7 @@ public class RepliesServiceImpl implements RepliesService {
 		
 		int updatedRows = this.repliesDao.updateReply(articleId, replyId, modifyRepliesVO);
 		if (updatedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		return this.repliesDao.selectReplyByReplyId(articleId, replyId);
@@ -96,7 +99,7 @@ public class RepliesServiceImpl implements RepliesService {
 	public String deleteReply(String articleId, String replyId) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
 		if (articles == null) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);
@@ -107,12 +110,12 @@ public class RepliesServiceImpl implements RepliesService {
 		
 		MembersVO loggedMember = (MembersVO) session.getAttribute("__LOGIN_USER__");
 		if (!loggedMember.getEmail().equals(reply.getEmail())) {
-			throw new IllegalArgumentException("삭제할 수 없는 댓글입니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.NOT_AUTHORIZED);
 		}
 		
 		int deletedRows = this.repliesDao.deleteReplyByReplyId(articleId, replyId);
 		if (deletedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		int deleteCount = this.multipartHandler.deleteFiles(reply.getFileSetId());
@@ -125,12 +128,12 @@ public class RepliesServiceImpl implements RepliesService {
 		
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
 		if (articles == null) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		int updatedRows = this.repliesDao.updateIncreaseRecommendCount(articleId, replyId);
 		if (updatedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 댓글입니다.");
+			throw new ArticleException(ExceptionType.REPLIES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		RepliesVO reply = this.repliesDao.selectReplyByReplyId(articleId, replyId);

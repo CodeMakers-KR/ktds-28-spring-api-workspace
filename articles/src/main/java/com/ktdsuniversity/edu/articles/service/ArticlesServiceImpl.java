@@ -65,7 +65,6 @@ public class ArticlesServiceImpl implements ArticlesService {
 			return this.articlesDao.selectArticleByArticleId( registArticleVO.getId() );
 		}
 		
-		//throw new IllegalArgumentException("입력값이 유효하지 않습니다.");
 		throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.BAD_REQUEST);
 	}
 	
@@ -83,7 +82,7 @@ public class ArticlesServiceImpl implements ArticlesService {
 		int updatedRows = this.articlesDao.updateArticle(articleId, modifyArticleVO);
 		
 		if (updatedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		return this.articlesDao.selectArticleByArticleId(articleId);
@@ -105,12 +104,12 @@ public class ArticlesServiceImpl implements ArticlesService {
 		ArticlesVO article = this.articlesDao.selectArticleByArticleId(articleId);
 		
 		if ( ! loggedMember.getEmail().equals(article.getEmail()) ) {
-			throw new IllegalArgumentException("삭제할 수 없는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_AUTHORIZED);
 		}
 		
 		int deletedRows = this.articlesDao.deleteArticle(articleId);
 		if (deletedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		int deleteCount = this.multipartHandler.deleteFiles(article.getFileSetId());
@@ -123,7 +122,7 @@ public class ArticlesServiceImpl implements ArticlesService {
 		int updatedRows = this.articlesDao.updateIncreaseViewCount(articleId);
 		
 		if (updatedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		return this.articlesDao.selectArticleByArticleId(articleId);
@@ -134,7 +133,7 @@ public class ArticlesServiceImpl implements ArticlesService {
 		int updatedRows = this.articlesDao.updateIncreaseRecommendCount(articleId);
 		
 		if (updatedRows == 0) {
-			throw new IllegalArgumentException("존재하지 않는 게시글입니다.");
+			throw new ArticleException(ExceptionType.ARTICLES, ArticleCodes.NOT_EXISTS);
 		}
 		
 		ArticlesVO article = this.articlesDao.selectArticleByArticleId(articleId);
