@@ -12,6 +12,7 @@ import org.springframework.validation.FieldError;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.ktdsuniversity.edu.commons.vo.PaginationVO;
 
 import lombok.Data;
 
@@ -23,8 +24,9 @@ public class ApiResponse<T> {
 	private String httpStatusMessage;
 	
 	private T body;
-	
 	private String error;
+	
+	private PaginationVO paginate;
 	
 	private Map<String, List<String>> validations;
 	
