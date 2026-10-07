@@ -3,6 +3,7 @@ package com.ktdsuniversity.edu.replies.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -25,6 +26,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 @Service
+//@Transactional
 public class RepliesServiceImpl implements RepliesService {
 
 	private static final Logger logger = LoggerFactory.getLogger(RepliesServiceImpl.class);
@@ -47,6 +49,7 @@ public class RepliesServiceImpl implements RepliesService {
 		return list;
 	}
 
+	@Transactional
 	@Override
 	public RepliesVO createNewReply(String articleId, RegistRepliesVO registRepliesVO) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
@@ -69,6 +72,7 @@ public class RepliesServiceImpl implements RepliesService {
 		return this.repliesDao.selectReplyByReplyId(articleId, registRepliesVO.getId());
 	}
 
+	@Transactional
 	@Override
 	public RepliesVO updateReply(String articleId, String replyId, ModifyRepliesVO modifyRepliesVO) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
@@ -95,6 +99,7 @@ public class RepliesServiceImpl implements RepliesService {
 		return this.repliesDao.selectReplyByReplyId(articleId, replyId);
 	}
 
+	@Transactional
 	@Override
 	public String deleteReply(String articleId, String replyId) {
 		ArticlesVO articles = this.articlesDao.selectArticleByArticleId(articleId);
@@ -123,6 +128,7 @@ public class RepliesServiceImpl implements RepliesService {
 		return replyId;
 	}
 
+	@Transactional
 	@Override
 	public long recommendOneReply(String articleId, String replyId) {
 		

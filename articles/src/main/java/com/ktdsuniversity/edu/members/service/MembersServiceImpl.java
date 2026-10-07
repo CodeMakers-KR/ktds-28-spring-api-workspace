@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ktdsuniversity.edu.commons.crypto.AES;
 import com.ktdsuniversity.edu.commons.crypto.encrypt.hash.SHA;
@@ -31,6 +32,7 @@ public class MembersServiceImpl implements MembersService {
 	
 	private final MembersDao membersDao;
 
+	@Transactional
 	@Override
 	public MembersVO createNewMember(RegistMembersVO registMembersVO) {
 		
@@ -135,6 +137,7 @@ public class MembersServiceImpl implements MembersService {
 		}
 	}
 	
+	@Transactional
 	@Override
 	public String updateLogoutStatus(String email) {
 		int updatedRows = this.membersDao.updateLogoutStatus(email);
@@ -144,6 +147,7 @@ public class MembersServiceImpl implements MembersService {
 		return null;
 	}
 	
+	@Transactional
 	@Override
 	public String deleteMember(String email, String password) {
 		
