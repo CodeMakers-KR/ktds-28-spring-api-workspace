@@ -86,12 +86,8 @@ public class ArticlesController {
 		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
 		registArticleVO.setEmail( membersVO.getEmail() );
 		
-		try {
-			ArticlesVO result = this.articlesService.createNewArticle(registArticleVO);
-			return ApiResponse.CREATED(result);
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		ArticlesVO result = this.articlesService.createNewArticle(registArticleVO);
+		return ApiResponse.CREATED(result);
 	}
 
 	@PutMapping("/articles/{articleId}")
@@ -110,12 +106,8 @@ public class ArticlesController {
 		// HttpSession에 있는 __LOGIN_USER__에 있는 email을 꺼내 registArticleVO에 할당.
 		modifyArticleVO.setEmail( membersVO.getEmail() );
 		
-		try {
-			ArticlesVO result = this.articlesService.updateArticle(articleId, modifyArticleVO);
-			return ApiResponse.OK(result);
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		ArticlesVO result = this.articlesService.updateArticle(articleId, modifyArticleVO);
+		return ApiResponse.OK(result);
 	}
 
 	@DeleteMapping("/articles/{articleId}")
@@ -123,33 +115,21 @@ public class ArticlesController {
 	public ApiResponse<String> deleteArticle(
 			@Size(min=18, max=20, message="잘못된 값입니다.") 
 			@PathVariable String articleId) {
-		try {
-			String deleteResult = this.articlesService.deleteArticle(articleId);
-			return ApiResponse.OK(deleteResult);
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		String deleteResult = this.articlesService.deleteArticle(articleId);
+		return ApiResponse.OK(deleteResult);
 	}
 
 	@GetMapping("/articles/{articleId}")
 	@ResponseBody
 	public ApiResponse<ArticlesVO> getOneArticle(@PathVariable String articleId) {
-		try {
-			ArticlesVO result = this.articlesService.readOneArticle(articleId);
-			return ApiResponse.OK(result);
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		ArticlesVO result = this.articlesService.readOneArticle(articleId);
+		return ApiResponse.OK(result);
 	}
 
 	@PutMapping("/articles/recommend/{articleId}")
 	@ResponseBody
 	public ApiResponse<Long> recommendOneArticle(@PathVariable String articleId) {
-		try {
-			long recommendResult = this.articlesService.recommendOneArticle(articleId);
-			return ApiResponse.OK(recommendResult);
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		long recommendResult = this.articlesService.recommendOneArticle(articleId);
+		return ApiResponse.OK(recommendResult);
 	}
 }

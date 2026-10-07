@@ -32,11 +32,7 @@ public class RepliesController {
 	public ApiResponse<ReplyListVO> getReplies(
 			@Pattern(regexp = "^AR-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.") 
 			@PathVariable String articleId) {
-		try {
-			return ApiResponse.OK(this.repliesService.readAllRepliesByArticleId(articleId));
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		return ApiResponse.OK(this.repliesService.readAllRepliesByArticleId(articleId));
 	}
 	
 	@PostMapping("/articles/{articleId}/replies")
@@ -54,11 +50,7 @@ public class RepliesController {
 		
 		registRepliesVO.setEmail( membersVO.getEmail() );
 		
-		try {
-			return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		return ApiResponse.OK(this.repliesService.createNewReply(articleId, registRepliesVO));
 	}
 
 	@PutMapping("/articles/{articleId}/replies/{replyId}")
@@ -78,11 +70,7 @@ public class RepliesController {
 		
 		modifyRepliesVO.setEmail( membersVO.getEmail() );
 		
-		try {
-			return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		return ApiResponse.OK(this.repliesService.updateReply(articleId, replyId, modifyRepliesVO));
 	}
 
 	@DeleteMapping("/articles/{articleId}/replies/{replyId}")
@@ -91,11 +79,7 @@ public class RepliesController {
 			@PathVariable String articleId, 
 			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String replyId) {
-		try {
-			return ApiResponse.OK(this.repliesService.deleteReply(articleId, replyId));
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		return ApiResponse.OK(this.repliesService.deleteReply(articleId, replyId));
 	}
 
 	@PutMapping("/articles/{articleId}/replies/recommend/{replyId}")
@@ -104,10 +88,6 @@ public class RepliesController {
 			@PathVariable String articleId, 
 			@Pattern(regexp = "^RP-[0-9]{8}-[0-9]{6,8}$", message="잘못된 요청입니다.")
 			@PathVariable String replyId) {
-		try {
-			return ApiResponse.OK(this.repliesService.recommendOneReply(articleId, replyId));
-		} catch (IllegalArgumentException iae) {
-			return ApiResponse.FORBIDDEN(iae.getMessage());
-		}
+		return ApiResponse.OK(this.repliesService.recommendOneReply(articleId, replyId));
 	}
 }

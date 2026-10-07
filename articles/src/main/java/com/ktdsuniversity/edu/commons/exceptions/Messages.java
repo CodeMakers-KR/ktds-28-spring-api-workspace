@@ -19,6 +19,7 @@ public class Messages {
 		messages.put(ExceptionType.FILES, new HashMap<>());
 		messages.get(ExceptionType.FILES).put(ArticleCodes.SYSTEM_ERROR, "파일 세트를 만들 수 없습니다.");
 		messages.get(ExceptionType.FILES).put(ArticleCodes.BAD_REQUEST, "잘못된 요청입니다.");
+		messages.get(ExceptionType.FILES).put(ArticleCodes.NOT_EXISTS, "다운로드할 파일을 찾을 수 없습니다.");
 		
 		messages.put(ExceptionType.MEMBERS, new HashMap<>());
 		messages.get(ExceptionType.MEMBERS).put(ArticleCodes.USED, "이미 사용중입니다.");
