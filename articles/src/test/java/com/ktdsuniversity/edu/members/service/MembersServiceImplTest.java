@@ -35,8 +35,9 @@ public class MembersServiceImplTest {
 	@DisplayName("회원가입 실패 테스트 - 이메일 중복")
 	public void testCreateNewMemberDuplicateEmail() {
 		// given
-		BDDMockito.given(this.membersDao.selectEmailCount("test@gmail.com")).willReturn(1); // 이미 존재하는 이메일
-
+		BDDMockito.given(this.membersDao.selectEmailCount("test@gmail.com"))
+		          .willReturn(1); // 이미 존재하는 이메일
+		
 		RegistMembersVO registMembersVO = new RegistMembersVO();
 		registMembersVO.setEmail("test@gmail.com");
 		registMembersVO.setName("TestUser");
