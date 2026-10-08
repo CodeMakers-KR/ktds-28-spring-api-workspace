@@ -139,6 +139,7 @@
     <select id="selectAllMembers"
             parameterType="com.ktdsuniversity.edu.members.vo.request.SearchMemberVO"
             resultType="com.ktdsuniversity.edu.members.vo.response.MembersVO">
+        <include refid="Commons.paginate_header" />
         SELECT EMAIL
              , AES_DECRYPTION(NAME) AS NAME
              , AES_DECRYPTION(NICKNAME) AS NICKNAME
@@ -167,6 +168,8 @@
            AND REGIST_DATE >= TO_DATE(#{registDate}, 'YYYY-MM-DD')
            AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{registDate}, 'YYYY-MM-DD') + 1
         </if>
+        ORDER BY NAME ASC
+        <include refid="Commons.paginate_footer" />
     </select>
 </mapper>
 
