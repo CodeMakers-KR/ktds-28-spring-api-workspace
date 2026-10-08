@@ -2,6 +2,7 @@ package com.ktdsuniversity.edu.members.service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ktdsuniversity.edu.commons.crypto.AES;
 import com.ktdsuniversity.edu.commons.crypto.encrypt.hash.SHA;
 import com.ktdsuniversity.edu.commons.exceptions.ArticleException;
 import com.ktdsuniversity.edu.commons.exceptions.enums.ArticleCodes;
@@ -17,6 +17,8 @@ import com.ktdsuniversity.edu.commons.exceptions.enums.ExceptionType;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
 import com.ktdsuniversity.edu.members.vo.request.LoginMemberVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistMembersVO;
+import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO;
+import com.ktdsuniversity.edu.members.vo.response.MemberListVO;
 import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 
 import lombok.RequiredArgsConstructor;
@@ -48,13 +50,13 @@ public class MembersServiceImpl implements MembersService {
 			throw new ArticleException(ExceptionType.MEMBERS, ArticleCodes.USED);
 		}
 		
-		String rawName = registMembersVO.getName();
-		String encryptedName = AES.encode(this.aesSecretKey, rawName);
-		registMembersVO.setName(encryptedName);
-		
-		String rawNickname = registMembersVO.getNickname();
-		String encryptedNickname = AES.encode(this.aesSecretKey, rawNickname);
-		registMembersVO.setNickname(encryptedNickname);
+//		String rawName = registMembersVO.getName();
+//		String encryptedName = AES.encode(this.aesSecretKey, rawName);
+//		registMembersVO.setName(encryptedName);
+//		
+//		String rawNickname = registMembersVO.getNickname();
+//		String encryptedNickname = AES.encode(this.aesSecretKey, rawNickname);
+//		registMembersVO.setNickname(encryptedNickname);
 		
 		String rawPassword = registMembersVO.getPassword();
 		String salt = SHA.generateSalt();
@@ -69,8 +71,8 @@ public class MembersServiceImpl implements MembersService {
 		}
 		
 		MembersVO newMember = this.membersDao.selectMemberByEmail(email);
-		newMember.setName( AES.decode(this.aesSecretKey, newMember.getName()) );
-		newMember.setNickname( AES.decode(this.aesSecretKey, newMember.getNickname()) );
+//		newMember.setName( AES.decode(this.aesSecretKey, newMember.getName()) );
+//		newMember.setNickname( AES.decode(this.aesSecretKey, newMember.getNickname()) );
 		return newMember;
 	}
 
@@ -119,8 +121,8 @@ public class MembersServiceImpl implements MembersService {
 			}
 			
 			MembersVO loggedMember = this.membersDao.selectMemberByEmail(membersVO.getEmail() );
-			loggedMember.setName( AES.decode(this.aesSecretKey, loggedMember.getName()) );
-			loggedMember.setNickname( AES.decode(this.aesSecretKey, loggedMember.getNickname()) );
+//			loggedMember.setName( AES.decode(this.aesSecretKey, loggedMember.getName()) );
+//			loggedMember.setNickname( AES.decode(this.aesSecretKey, loggedMember.getNickname()) );
 			return loggedMember;
 		}
 		
@@ -166,6 +168,20 @@ public class MembersServiceImpl implements MembersService {
 			return loggedMember.getEmail();
 		}
 		return null;
+	}
+
+	@Override
+	public MemberListVO readAllMembers(SearchMemberVO searchMemberVO) {
+		long membersCount = this.membersDao.selectMemberCount(searchMemberVO);
+		searchMemberVO.calculatePageCount(membersCount);
+		
+		List<MembersVO> memberList = this.membersDao.selectAllMembers(searchMemberVO);
+		
+		MemberListVO result = new MemberListVO();
+		result.setMemberCount(membersCount);
+		result.setMemberList(memberList);
+		
+		return result;
 	}
 	
 }

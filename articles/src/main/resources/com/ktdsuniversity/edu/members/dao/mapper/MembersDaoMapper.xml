@@ -31,8 +31,8 @@
         , SALT)
         VALUES 
          (#{email}
-        , #{name}
-        , #{nickname}
+        , AES_ENCRYPTION(#{name})
+        , AES_ENCRYPTION(#{nickname})
         , #{password}
         , SYSDATE
         , #{salt})
@@ -42,8 +42,8 @@
             parameterType="string" 
             resultType="com.ktdsuniversity.edu.members.vo.response.MembersVO">
         SELECT EMAIL
-             , NAME
-             , NICKNAME
+             , AES_DECRYPTION(NAME) AS NAME
+             , AES_DECRYPTION(NICKNAME) AS NICKNAME
              , PASSWORD
              , TO_CHAR(REGIST_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE
              , TO_CHAR(MODIFY_DATE, 'YYYY-MM-DD HH24:MI:SS') AS MODIFY_DATE
@@ -114,6 +114,60 @@
              , SALT = 'EXPIRED_USER'
          WHERE EMAIL = #{_parameter}
     </update>
+    
+    <select id="selectMemberCount"
+            parameterType="com.ktdsuniversity.edu.members.vo.request.SearchMemberVO"
+            resultType="_long">
+        SELECT COUNT(EMAIL)
+          FROM MEMBERS
+         WHERE DEL_YN = 'N'
+        <if test='email != null and email != ""'>
+           AND EMAIL LIKE '%' || #{email} ||  '%'
+        </if>
+        <if test='name != null and name != ""'>
+           AND NAME = AES_ENCRYPTION(#{name})
+        </if>
+        <if test='nickname != null and nickname != ""'>
+           AND NICKNAME = AES_ENCRYPTION(#{nickname})
+        </if>
+        <if test='registDate != null and registDate != ""'>
+           AND REGIST_DATE >= TO_DATE(#{registDate}, 'YYYY-MM-DD')
+           AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{registDate}, 'YYYY-MM-DD') + 1
+        </if>
+    </select>
+    
+    <select id="selectAllMembers"
+            parameterType="com.ktdsuniversity.edu.members.vo.request.SearchMemberVO"
+            resultType="com.ktdsuniversity.edu.members.vo.response.MembersVO">
+        SELECT EMAIL
+             , AES_DECRYPTION(NAME) AS NAME
+             , AES_DECRYPTION(NICKNAME) AS NICKNAME
+             , TO_CHAR(REGIST_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE
+             , TO_CHAR(MODIFY_DATE, 'YYYY-MM-DD HH24:MI:SS') AS MODIFY_DATE
+             , TO_CHAR(LATEST_LOGIN_SUCCESS_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGIN_SUCCESS_DATE
+             , TO_CHAR(LATEST_LOGIN_FAIL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGIN_FAIL_DATE
+             , TO_CHAR(LATEST_LOGOUT_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGOUT_DATE
+             , LOGIN_FAIL_COUNT
+             , LOGIN_BLOCK_YN
+             , TO_CHAR(LOGIN_BLOCK_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LOGIN_BLOCK_DATE
+             , LOGIN_YN
+             , DEL_YN
+          FROM MEMBERS
+         WHERE DEL_YN = 'N'
+        <if test='email != null and email != ""'>
+           AND EMAIL LIKE '%' || #{email} ||  '%'
+        </if>
+        <if test='name != null and name != ""'>
+           AND NAME = AES_ENCRYPTION(#{name})
+        </if>
+        <if test='nickname != null and nickname != ""'>
+           AND NICKNAME = AES_ENCRYPTION(#{nickname})
+        </if>
+        <if test='registDate != null and registDate != ""'>
+           AND REGIST_DATE >= TO_DATE(#{registDate}, 'YYYY-MM-DD')
+           AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{registDate}, 'YYYY-MM-DD') + 1
+        </if>
+    </select>
 </mapper>
 
 

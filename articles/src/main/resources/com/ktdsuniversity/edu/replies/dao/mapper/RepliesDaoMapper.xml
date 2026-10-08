@@ -8,7 +8,10 @@
             parameterType="string"
             resultType="_long">
         SELECT COUNT(DISTINCT R.ID)
-          FROM REPLIES R
+          FROM MEMBERS M
+         INNER JOIN REPLIES R
+            ON M.EMAIL = R.EMAIL
+           AND M.DEL_YN = 'N'
           LEFT OUTER JOIN (SELECT FS.ID
                              FROM FILE_SET FS
                             INNER JOIN FILES F
@@ -23,6 +26,11 @@
                id="RepliesVOMap"
                autoMapping="true">
         <id column="ID" property="id" />
+        <association property="member"
+                     javaType="com.ktdsuniversity.edu.members.vo.response.MembersVO"
+                     autoMapping="true">
+            <id column="EMAIL" property="email"/>
+        </association>
         <association property="fileSet"
                      javaType="com.ktdsuniversity.edu.files.vo.response.FileSetVO"
                      autoMapping="true">
@@ -62,7 +70,13 @@
              , F.FILE_SIZE
              , F.DOWNLOAD_COUNT
              , F.DEL_YN AS FILE_DEL_YN
-          FROM REPLIES R
+             , AES_DECRYPTION(M.NAME) AS NAME
+             , AES_DECRYPTION(M.NICKNAME) AS NICKNAME
+             , M.REGIST_DATE
+          FROM MEMBERS M
+         INNER JOIN REPLIES R
+            ON M.EMAIL = R.EMAIL
+           AND M.DEL_YN = 'N'
           LEFT OUTER JOIN (SELECT FS.ID
                                 , FS.EMAIL
                                 , TO_CHAR(FS.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') AS CRT_DT
@@ -132,7 +146,13 @@
              , F.FILE_SIZE
              , F.DOWNLOAD_COUNT
              , F.DEL_YN AS FILE_DEL_YN
-          FROM REPLIES R
+             , AES_DECRYPTION(M.NAME) AS NAME
+             , AES_DECRYPTION(M.NICKNAME) AS NICKNAME
+             , M.REGIST_DATE
+          FROM MEMBERS M
+         INNER JOIN REPLIES R
+            ON M.EMAIL = R.EMAIL
+           AND M.DEL_YN = 'N'
           LEFT OUTER JOIN (SELECT FS.ID
                                 , FS.EMAIL
                                 , TO_CHAR(FS.CRT_DT, 'YYYY-MM-DD HH24:MI:SS') AS CRT_DT
