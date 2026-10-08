@@ -13,10 +13,13 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.ktdsuniversity.edu.commons.util.ApiResponse;
+import com.ktdsuniversity.edu.commons.util.ApiResponseV2;
+import com.ktdsuniversity.edu.commons.vo.PaginationVO;
 import com.ktdsuniversity.edu.members.service.MembersService;
 import com.ktdsuniversity.edu.members.vo.request.LoginMemberVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistMembersVO;
 import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO;
+import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO2;
 import com.ktdsuniversity.edu.members.vo.response.MemberListVO;
 import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 
@@ -99,6 +102,14 @@ public class MembersController {
 	public ApiResponse<MemberListVO> readMemberList(SearchMemberVO searchMemberVO) {
 		ApiResponse<MemberListVO> result = ApiResponse.OK(this.membersService.readAllMembers(searchMemberVO));
 		result.setPaginate(searchMemberVO);
+		return result;
+	}
+	
+	@GetMapping("/members/list/v2")
+	public ApiResponseV2<MemberListVO> readMemberListV2(PaginationVO paginationVO, SearchMemberVO2 searchMemberVO) {
+		ApiResponseV2<MemberListVO> result = ApiResponseV2.OK(this.membersService.readAllMembersV2(paginationVO, searchMemberVO));
+		result.setPaginate(paginationVO);
+		result.setSearch(searchMemberVO);
 		return result;
 	}
 }

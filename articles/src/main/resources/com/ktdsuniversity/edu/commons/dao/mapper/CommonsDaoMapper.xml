@@ -29,6 +29,13 @@
 		 WHERE RNUM >= #{pageNo} * #{listSize} + 1
 		   AND RNUM <![CDATA[ <= ]]> (#{pageNo} + 1) * #{listSize}
     </sql>
+    
+    
+    <sql id="paginate_footer_v2">
+                 ) T
+                 WHERE ROWNUM <![CDATA[<=]]> (#{pagination.pageNo} + 1) * #{pagination.listSize})
+         WHERE RNUM >= #{pagination.pageNo} * #{pagination.listSize} + 1
+    </sql>
 </mapper>
 
 

@@ -14,10 +14,12 @@ import com.ktdsuniversity.edu.commons.crypto.encrypt.hash.SHA;
 import com.ktdsuniversity.edu.commons.exceptions.ArticleException;
 import com.ktdsuniversity.edu.commons.exceptions.enums.ArticleCodes;
 import com.ktdsuniversity.edu.commons.exceptions.enums.ExceptionType;
+import com.ktdsuniversity.edu.commons.vo.PaginationVO;
 import com.ktdsuniversity.edu.members.dao.MembersDao;
 import com.ktdsuniversity.edu.members.vo.request.LoginMemberVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistMembersVO;
 import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO;
+import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO2;
 import com.ktdsuniversity.edu.members.vo.response.MemberListVO;
 import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 
@@ -184,6 +186,19 @@ public class MembersServiceImpl implements MembersService {
 		return result;
 	}
 	
+	@Override
+	public MemberListVO readAllMembersV2(PaginationVO paginationVO, SearchMemberVO2 searchMemberVO) {
+		long membersCount = this.membersDao.selectMemberCountV2(searchMemberVO);
+		paginationVO.calculatePageCount(membersCount);
+		
+		List<MembersVO> memberList = this.membersDao.selectAllMembersV2(paginationVO, searchMemberVO);
+		
+		MemberListVO result = new MemberListVO();
+		result.setMemberCount(membersCount);
+		result.setMemberList(memberList);
+		
+		return result;
+	}
 }
 
 

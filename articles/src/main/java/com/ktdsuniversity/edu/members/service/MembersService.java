@@ -1,8 +1,10 @@
 package com.ktdsuniversity.edu.members.service;
 
+import com.ktdsuniversity.edu.commons.vo.PaginationVO;
 import com.ktdsuniversity.edu.members.vo.request.LoginMemberVO;
 import com.ktdsuniversity.edu.members.vo.request.RegistMembersVO;
 import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO;
+import com.ktdsuniversity.edu.members.vo.request.SearchMemberVO2;
 import com.ktdsuniversity.edu.members.vo.response.MemberListVO;
 import com.ktdsuniversity.edu.members.vo.response.MembersVO;
 
@@ -17,5 +19,7 @@ public interface MembersService {
 	String deleteMember(String email, String password);
 
 	MemberListVO readAllMembers(SearchMemberVO searchMemberVO);
+
+	MemberListVO readAllMembersV2(PaginationVO paginationVO, SearchMemberVO2 searchMemberVO);
 
 }

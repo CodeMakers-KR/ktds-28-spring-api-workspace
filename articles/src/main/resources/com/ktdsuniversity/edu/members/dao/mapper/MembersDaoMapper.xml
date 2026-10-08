@@ -172,6 +172,65 @@
             , NICKNAME ASC
         <include refid="Commons.paginate_footer" />
     </select>
+    
+    
+    
+    
+    <select id="selectMemberCountV2"
+            resultType="_long">
+        SELECT COUNT(EMAIL)
+          FROM MEMBERS
+         WHERE DEL_YN = 'N'
+        <if test='search.email != null and search.email != ""'>
+           AND EMAIL LIKE '%' || #{search.email} ||  '%'
+        </if>
+        <if test='search.name != null and search.name != ""'>
+           AND NAME = AES_ENCRYPTION(#{search.name})
+        </if>
+        <if test='search.nickname != null and search.nickname != ""'>
+           AND NICKNAME = AES_ENCRYPTION(#{search.nickname})
+        </if>
+        <if test='search.registDate != null and search.registDate != ""'>
+           AND REGIST_DATE >= TO_DATE(#{search.registDate}, 'YYYY-MM-DD')
+           AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{search.registDate}, 'YYYY-MM-DD') + 1
+        </if>
+    </select>
+    
+    <select id="selectAllMembersV2"
+            resultType="com.ktdsuniversity.edu.members.vo.response.MembersVO">
+        <include refid="Commons.paginate_header" />
+        SELECT EMAIL
+             , AES_DECRYPTION(NAME) AS NAME
+             , AES_DECRYPTION(NICKNAME) AS NICKNAME
+             , TO_CHAR(REGIST_DATE, 'YYYY-MM-DD HH24:MI:SS') AS REGIST_DATE
+             , TO_CHAR(MODIFY_DATE, 'YYYY-MM-DD HH24:MI:SS') AS MODIFY_DATE
+             , TO_CHAR(LATEST_LOGIN_SUCCESS_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGIN_SUCCESS_DATE
+             , TO_CHAR(LATEST_LOGIN_FAIL_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGIN_FAIL_DATE
+             , TO_CHAR(LATEST_LOGOUT_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LATEST_LOGOUT_DATE
+             , LOGIN_FAIL_COUNT
+             , LOGIN_BLOCK_YN
+             , TO_CHAR(LOGIN_BLOCK_DATE, 'YYYY-MM-DD HH24:MI:SS') AS LOGIN_BLOCK_DATE
+             , LOGIN_YN
+             , DEL_YN
+          FROM MEMBERS
+         WHERE DEL_YN = 'N'
+        <if test='search.email != null and search.email != ""'>
+           AND EMAIL LIKE '%' || #{search.email} ||  '%'
+        </if>
+        <if test='search.name != null and search.name != ""'>
+           AND NAME = AES_ENCRYPTION(#{search.name})
+        </if>
+        <if test='search.nickname != null and search.nickname != ""'>
+           AND NICKNAME = AES_ENCRYPTION(#{search.nickname})
+        </if>
+        <if test='search.registDate != null and search.registDate != ""'>
+           AND REGIST_DATE >= TO_DATE(#{search.registDate}, 'YYYY-MM-DD')
+           AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{search.registDate}, 'YYYY-MM-DD') + 1
+        </if>
+        ORDER BY NAME ASC
+            , NICKNAME ASC
+        <include refid="Commons.paginate_footer_v2" />
+    </select>
 </mapper>
 
 
