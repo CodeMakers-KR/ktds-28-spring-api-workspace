@@ -169,6 +169,7 @@
            AND REGIST_DATE <![CDATA[ < ]]> TO_DATE(#{registDate}, 'YYYY-MM-DD') + 1
         </if>
         ORDER BY NAME ASC
+            , NICKNAME ASC
         <include refid="Commons.paginate_footer" />
     </select>
 </mapper>
